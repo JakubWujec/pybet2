@@ -3,20 +3,22 @@ from typing import Annotated
 from fastapi import Depends
 from sqlmodel import Session
 
+from app.eventDispatcher import SimpleEventDispatcher
+from app.registerEventSubscribers import registerEventSubscribers
 from app.db_session import get_session
 from app.games.repository import (
     GameRepository,
     SqlGameRepository,
 )
 from app.predictions.repository import (
-    InMemoryPredictionRepository,
     PredictionRepository,
     SqlPredictionRepository,
 )
-from app.predictions.service import MakePredictionService
-
-
-predictionRepository = InMemoryPredictionRepository()
+from app.predictions.service import (
+    MakePredictionService,
+    UpdatePredictionPoints,
+    UpdatePredictionPointsService,
+)
 
 
 def get_game_repository(session: Annotated[Session, Depends(get_session)]):
@@ -34,3 +36,22 @@ def getMakePredictionService(
     ],
 ):
     return MakePredictionService(gameRepository, predictionRepository)
+
+
+def getUpdatePredictionPoints(
+    predictionRepository: Annotated[
+        PredictionRepository, Depends(get_prediction_repository)
+    ],
+):
+    updatePredictionPointsService = UpdatePredictionPointsService(predictionRepository)
+    return UpdatePredictionPoints(updatePredictionPointsService)
+
+
+def getEventDispatcher(
+    updatePredictionPoints: Annotated[
+        UpdatePredictionPoints, getUpdatePredictionPoints
+    ],
+):
+    event_dispatcher = SimpleEventDispatcher()
+    registerEventSubscribers(event_dispatcher, updatePredictionPoints)
+    return event_dispatcher

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from app.games.events import GameScoreFilled
 from app.games.repository import GameRepository
 from app.predictions.exceptions import CouldNotCreatePrediction
 from app.predictions.models import Prediction
@@ -35,3 +36,24 @@ class MakePredictionService:
         )
 
         return nextId
+
+
+class UpdatePredictionPointsService:
+    def __init__(self, predictionRepository: PredictionRepository) -> None:
+        self.__predictionRepository = predictionRepository
+
+    def updatePredictionsFor(self, gameId: int, homeSideScore: int, awaySideScore: int):
+        # get predictions by gameId
+        # calculate points
+        # set points
+        pass
+
+
+class UpdatePredictionPoints:
+    def __init__(self, service: UpdatePredictionPointsService) -> None:
+        self.__service = service
+
+    def whenGameScoreUpdated(self, event: GameScoreFilled):
+        self.__service.updatePredictionsFor(
+            event.gameId, event.homeSideScore, event.awaySideScore
+        )

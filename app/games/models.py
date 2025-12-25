@@ -18,7 +18,13 @@ class Game(BaseModel):
     def fillScore(self, homeSideScore: int, awaySideScore: int):
         self.homeSideScore = homeSideScore
         self.awaySideScore = awaySideScore
-        self._events.append(GameScoreFilled(gameId=self.gameId))
+        self._events.append(
+            GameScoreFilled(
+                gameId=self.gameId,
+                homeSideScore=self.homeSideScore,
+                awaySideScore=self.awaySideScore,
+            )
+        )
 
     def releaseEvents(self):
         events = self._events

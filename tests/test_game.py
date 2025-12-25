@@ -10,4 +10,7 @@ class TestGame:
         events = game.releaseEvents()
 
         assert len(events) > 0
-        assert GameScoreFilled(gameId=game.gameId) in events
+        assert (
+            GameScoreFilled(gameId=game.gameId, homeSideScore=2, awaySideScore=3)
+            in events
+        )
