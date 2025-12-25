@@ -39,10 +39,11 @@ class InMemoryGameRepository(GameRepository):
 class SqlGameRepository(GameRepository):
     def __init__(self, session: Session = Depends(get_session)) -> None:
         self.session = session
+        self.lastId = 0
 
     def getNextId(self) -> int:
-        self.last_id += 1
-        return self.last_id
+        self.lastId += 1
+        return self.lastId
 
     def save(self, game: Game):
         self.session.add(DbGame.model_validate(game))
@@ -52,8 +53,11 @@ class SqlGameRepository(GameRepository):
         if not game:
             raise ValueError(f"No order with id {gameId}")
 
-        return Game.model_validate(game)
+        return Game.model_validate(game.model_dump())
 
     def findById(self, gameId: int):
         game = self.session.get(DbGame, gameId)
-        return Game.model_validate(game)
+        if game is None:
+            return None
+
+        return Game.model_validate(game.model_dump())
