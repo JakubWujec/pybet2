@@ -41,3 +41,10 @@ class DbGame(SQLModel, table=True):
     kickoff: str
     homeSideScore: int | None = Field(default=None)
     awaySideScore: int | None = Field(default=None)
+
+    def toDomain(self):
+        return Game.model_validate(self.model_dump())
+
+    @classmethod
+    def fromDomain(cls, game: Game):
+        return cls.model_validate(game)

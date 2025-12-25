@@ -46,18 +46,18 @@ class SqlGameRepository(GameRepository):
         return self.lastId
 
     def save(self, game: Game):
-        self.session.add(DbGame.model_validate(game))
+        self.session.add(DbGame.fromDomain(game))
 
     def getById(self, gameId: int):
-        game = self.session.get(DbGame, gameId)
-        if not game:
+        dbGame = self.session.get(DbGame, gameId)
+        if not dbGame:
             raise ValueError(f"No order with id {gameId}")
 
-        return Game.model_validate(game.model_dump())
+        return dbGame.toDomain()
 
     def findById(self, gameId: int):
-        game = self.session.get(DbGame, gameId)
-        if game is None:
+        dbGame = self.session.get(DbGame, gameId)
+        if dbGame is None:
             return None
 
-        return Game.model_validate(game.model_dump())
+        return dbGame.toDomain()
