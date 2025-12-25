@@ -4,6 +4,7 @@ from fastapi import Depends
 from sqlmodel import Session
 
 from app.eventDispatcher import SimpleEventDispatcher
+from app.predictions.pointScoring import PointScoring, SimplePointScoring
 from app.registerEventSubscribers import registerEventSubscribers
 from app.db_session import get_session
 from app.games.repository import (
@@ -29,6 +30,10 @@ def get_prediction_repository(session: Annotated[Session, Depends(get_session)])
     return SqlPredictionRepository(session)
 
 
+def getPointScoring() -> PointScoring:
+    return SimplePointScoring()
+
+
 def getMakePredictionService(
     gameRepository: Annotated[GameRepository, Depends(get_game_repository)],
     predictionRepository: Annotated[
@@ -42,8 +47,11 @@ def getUpdatePredictionPoints(
     predictionRepository: Annotated[
         PredictionRepository, Depends(get_prediction_repository)
     ],
+    pointScoring: Annotated[PointScoring, Depends(getPointScoring)],
 ):
-    updatePredictionPointsService = UpdatePredictionPointsService(predictionRepository)
+    updatePredictionPointsService = UpdatePredictionPointsService(
+        predictionRepository, pointScoring
+    )
     return UpdatePredictionPoints(updatePredictionPointsService)
 
 

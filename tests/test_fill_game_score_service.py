@@ -2,6 +2,7 @@ from app.dependencies import getEventDispatcher, getUpdatePredictionPoints
 from app.games.models import Game
 from app.games.repository import InMemoryGameRepository
 from app.games.services import UpdateGameScoreService
+from app.predictions.pointScoring import SimplePointScoring
 from app.predictions.repository import InMemoryPredictionRepository
 
 
@@ -9,8 +10,10 @@ class TestUpdateGameScoreService:
     def test_update_game_score_change_score_to_provided_values(self):
         gameRepo = InMemoryGameRepository()
         predictionRepo = InMemoryPredictionRepository()
+        pointScoring = SimplePointScoring()
         service = UpdateGameScoreService(
-            gameRepo, getEventDispatcher(getUpdatePredictionPoints(predictionRepo))
+            gameRepo,
+            getEventDispatcher(getUpdatePredictionPoints(predictionRepo, pointScoring)),
         )
 
         game1 = Game(
