@@ -1,4 +1,3 @@
-from functools import cache
 from typing import Annotated
 
 from fastapi import Depends
@@ -12,6 +11,7 @@ from app.games.repository import (
 from app.predictions.repository import (
     InMemoryPredictionRepository,
     PredictionRepository,
+    SqlPredictionRepository,
 )
 from app.predictions.service import MakePredictionService
 
@@ -23,9 +23,8 @@ def get_game_repository(session: Annotated[Session, Depends(get_session)]):
     return SqlGameRepository(session)
 
 
-@cache
-def get_prediction_repository():
-    return predictionRepository
+def get_prediction_repository(session: Annotated[Session, Depends(get_session)]):
+    return SqlPredictionRepository(session)
 
 
 def getMakePredictionService(

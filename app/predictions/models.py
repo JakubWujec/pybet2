@@ -9,7 +9,7 @@ class Prediction(BaseModel):
     awaySideScore: int
 
 
-class DbPrediction(SQLModel):
+class DbPrediction(SQLModel, table=True):
     predictionId: int | None = Field(default=None, primary_key=True)
     gameId: int
     homeSideScore: int
