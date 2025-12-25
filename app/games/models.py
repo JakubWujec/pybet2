@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from sqlmodel import SQLModel, Field
 
 from app.events import BaseEvent
-from app.games.events import GameScoreFilled
+from app.games.events import GameScoreUpdated
 
 
 class Game(BaseModel):
@@ -15,11 +15,11 @@ class Game(BaseModel):
 
     _events: list[BaseEvent] = []
 
-    def fillScore(self, homeSideScore: int, awaySideScore: int):
+    def updateScore(self, homeSideScore: int, awaySideScore: int):
         self.homeSideScore = homeSideScore
         self.awaySideScore = awaySideScore
         self._events.append(
-            GameScoreFilled(
+            GameScoreUpdated(
                 gameId=self.gameId,
                 homeSideScore=self.homeSideScore,
                 awaySideScore=self.awaySideScore,

@@ -1,7 +1,7 @@
 from app.events import BaseEvent
 
 
-class GameScoreFilled(BaseEvent):
+class GameScoreUpdated(BaseEvent):
     gameId: int
     homeSideScore: int
     awaySideScore: int
