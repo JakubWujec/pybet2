@@ -1,6 +1,7 @@
 from app.dependencies import getEventDispatcher, getUpdatePredictionPoints
 from app.games.models import Game
 from app.games.repository import InMemoryGameRepository
+from app.games.score import Score
 from app.games.services import UpdateGameScoreService
 from app.predictions.pointScoring import SimplePointScoring
 from app.predictions.repository import InMemoryPredictionRepository
@@ -24,9 +25,10 @@ class TestUpdateGameScoreService:
         )
         gameRepo.save(game1)
 
-        service.updateScore(gameId=1, homeSideScore=1, awaySideScore=1)
+        score = Score(homeSideScore=1, awaySideScore=1)
+
+        service.updateScore(gameId=1, score=score)
 
         game = gameRepo.getById(1)
 
-        assert game.homeSideScore == 1
-        assert game.awaySideScore == 1
+        assert game.score == score

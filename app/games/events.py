@@ -1,7 +1,7 @@
 from app.events import BaseEvent
+from app.games.score import Score
 
 
 class GameScoreUpdated(BaseEvent):
     gameId: int
-    homeSideScore: int
-    awaySideScore: int
+    score: Score

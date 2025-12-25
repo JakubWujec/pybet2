@@ -65,5 +65,7 @@ class UpdatePredictionPoints:
 
     def whenGameScoreUpdated(self, event: GameScoreUpdated):
         self.__service.updatePredictionsFor(
-            event.gameId, event.homeSideScore, event.awaySideScore
+            event.gameId,
+            homeSideScore=event.score.homeSideScore,
+            awaySideScore=event.score.awaySideScore,
         )

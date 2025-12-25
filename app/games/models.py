@@ -3,6 +3,7 @@ from sqlmodel import SQLModel, Field
 
 from app.events import BaseEvent
 from app.games.events import GameScoreUpdated
+from app.games.score import Score
 
 
 class Game(BaseModel):
@@ -15,16 +16,17 @@ class Game(BaseModel):
 
     _events: list[BaseEvent] = []
 
-    def updateScore(self, homeSideScore: int, awaySideScore: int):
-        self.homeSideScore = homeSideScore
-        self.awaySideScore = awaySideScore
-        self._events.append(
-            GameScoreUpdated(
-                gameId=self.gameId,
-                homeSideScore=self.homeSideScore,
-                awaySideScore=self.awaySideScore,
-            )
-        )
+    @property
+    def score(self):
+        if self.homeSideScore is None or self.awaySideScore is None:
+            return None
+        return Score(homeSideScore=self.homeSideScore, awaySideScore=self.awaySideScore)
+
+    def updateScore(self, score: Score):
+        self.homeSideScore = score.homeSideScore
+        self.awaySideScore = score.awaySideScore
+
+        self._events.append(GameScoreUpdated(gameId=self.gameId, score=score))
 
     def releaseEvents(self):
         events = self._events
