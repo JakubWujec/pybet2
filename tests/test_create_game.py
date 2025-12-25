@@ -6,8 +6,8 @@ class TestGameEndpoint:
         response = client.post(
             "/games/",
             json={
-                "home_side": "Arsenal",
-                "away_side": "Spurs",
+                "homeSide": "Arsenal",
+                "awaySide": "Spurs",
                 "kickoff": "2027-12-24 11:30",
             },
         )
@@ -19,8 +19,8 @@ class TestGameEndpoint:
         client.post(
             "/games/",
             json={
-                "home_side": "Arsenal",
-                "away_side": "Spurs",
+                "homeSide": "Arsenal",
+                "awaySide": "Spurs",
                 "kickoff": "2027-12-24 11:30",
             },
         )
@@ -31,8 +31,8 @@ class TestGameEndpoint:
         assert response.json() == {
             "game": {
                 "gameId": 1,
-                "home_side": "Arsenal",
-                "away_side": "Spurs",
+                "homeSide": "Arsenal",
+                "awaySide": "Spurs",
                 "kickoff": "2027-12-24 11:30",
             }
         }

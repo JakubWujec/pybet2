@@ -7,8 +7,8 @@ class TestMakePredictionEndpoint:
     def test_make_first_prediction(self, session: Session, client: TestClient):
         game1 = DbGame(
             gameId=1,
-            home_side="Arsenal",
-            away_side="Spurs",
+            homeSide="Arsenal",
+            awaySide="Spurs",
             kickoff="2027-12-24 11:30",
         )
         session.add(game1)

@@ -12,15 +12,15 @@ router = APIRouter(
 
 
 class CreateGame(BaseModel):
-    home_side: str
-    away_side: str
+    homeSide: str
+    awaySide: str
     kickoff: str
 
     def to_model(self, gameId: int) -> Game:
         return Game(
             gameId=gameId,
-            home_side=self.home_side,
-            away_side=self.away_side,
+            homeSide=self.homeSide,
+            awaySide=self.awaySide,
             kickoff=self.kickoff,
         )
 
@@ -41,8 +41,8 @@ async def getById(id: int):
     return {
         "game": {
             "gameId": id,
-            "home_side": "Arsenal",
-            "away_side": "Spurs",
+            "homeSide": "Arsenal",
+            "awaySide": "Spurs",
             "kickoff": "2027-12-24 11:30",
         }
     }
