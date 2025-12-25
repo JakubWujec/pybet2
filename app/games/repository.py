@@ -1,6 +1,10 @@
 from typing import Dict, Protocol
 
-from app.games.models import Game
+from fastapi import Depends
+from sqlmodel import Session
+
+from app.db_session import get_session
+from app.games.models import DbGame, Game
 
 
 class GameRepository(Protocol):
@@ -30,3 +34,26 @@ class InMemoryGameRepository(GameRepository):
 
     def findById(self, gameId: int):
         return self.__games.get(gameId, None)
+
+
+class SqlGameRepository(GameRepository):
+    def __init__(self, session: Session = Depends(get_session)) -> None:
+        self.session = session
+
+    def getNextId(self) -> int:
+        self.last_id += 1
+        return self.last_id
+
+    def save(self, game: Game):
+        self.session.add(DbGame.model_validate(game))
+
+    def getById(self, gameId: int):
+        game = self.session.get(DbGame, gameId)
+        if not game:
+            raise ValueError(f"No order with id {gameId}")
+
+        return Game.model_validate(game)
+
+    def findById(self, gameId: int):
+        game = self.session.get(DbGame, gameId)
+        return Game.model_validate(game)

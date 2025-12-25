@@ -1,18 +1,8 @@
-import pytest
-from app.main import app
 from fastapi.testclient import TestClient
 
 
 class TestGameEndpoint:
-    @pytest.fixture(scope="class")
-    def client(
-        self,
-    ):
-        test_app = app
-
-        return TestClient(test_app)
-
-    def test_create_first_game(self, client):
+    def test_create_first_game(self, client: TestClient):
         response = client.post(
             "/games/",
             json={

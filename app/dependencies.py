@@ -1,7 +1,4 @@
-from functools import cache, partial
-from typing import Annotated
-
-from fastapi import Depends
+from functools import cache
 
 from app.games.repository import InMemoryGameRepository
 from app.predictions.repository import InMemoryPredictionRepository
