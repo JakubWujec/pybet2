@@ -1,6 +1,6 @@
-from typing import Dict, Protocol
+from typing import Dict, List, Protocol
 
-from sqlmodel import Session
+from sqlmodel import Session, col, select
 
 from app.predictions.models import DbPrediction, Prediction
 
@@ -10,6 +10,8 @@ class PredictionRepository(Protocol):
     def getById(self, predictionId: int) -> Prediction: ...
     def getNextId(self) -> int: ...
     def findById(self, predictionId: int) -> Prediction | None: ...
+    def getRelatedTo(self, gameId: int) -> List[Prediction]: ...
+    def saveAll(self, predictions: List[Prediction]): ...
 
 
 class InMemoryPredictionRepository(PredictionRepository):
@@ -33,6 +35,17 @@ class InMemoryPredictionRepository(PredictionRepository):
     def findById(self, predictionId: int):
         return self.__predictions.get(predictionId, None)
 
+    def getRelatedTo(self, gameId: int):
+        return [
+            Prediction.model_validate(dbPrediction.model_dump())
+            for dbPrediction in self.__predictions.values()
+            if dbPrediction.gameId == gameId
+        ]
+
+    def saveAll(self, predictions: List[Prediction]):
+        for prediction in predictions:
+            self.save(prediction)
+
 
 class SqlPredictionRepository(PredictionRepository):
     def __init__(self, session: Session) -> None:
@@ -46,6 +59,13 @@ class SqlPredictionRepository(PredictionRepository):
     def save(self, prediction: Prediction):
         self.session.add(DbPrediction.model_validate(prediction))
 
+    def saveAll(self, predictions: List[Prediction]):
+        dbPredictions = [
+            DbPrediction.model_validate(prediction) for prediction in predictions
+        ]
+        self.session.add_all(dbPredictions)
+        self.session.commit()
+
     def getById(self, predictionId: int):
         prediction = self.session.get(DbPrediction, predictionId)
         if not prediction:
@@ -58,3 +78,12 @@ class SqlPredictionRepository(PredictionRepository):
         if prediction is None:
             return None
         return Prediction.model_validate(prediction.model_dump())
+
+    def getRelatedTo(self, gameId: int):
+        statement = select(DbPrediction).where(col(DbPrediction.gameId) == gameId)
+        results = self.session.exec(statement)
+        predictions = [
+            Prediction.model_validate(dbPrediction.model_dump())
+            for dbPrediction in results
+        ]
+        return predictions

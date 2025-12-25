@@ -7,6 +7,10 @@ class Prediction(BaseModel):
     gameId: int
     homeSideScore: int
     awaySideScore: int
+    points: int = Field(default=0)
+
+    def updatePoints(self, points):
+        self.points = points
 
 
 class DbPrediction(SQLModel, table=True):
@@ -14,3 +18,4 @@ class DbPrediction(SQLModel, table=True):
     gameId: int
     homeSideScore: int
     awaySideScore: int
+    points: int

@@ -43,10 +43,17 @@ class UpdatePredictionPointsService:
         self.__predictionRepository = predictionRepository
 
     def updatePredictionsFor(self, gameId: int, homeSideScore: int, awaySideScore: int):
-        # get predictions by gameId
-        # calculate points
-        # set points
-        pass
+        predictions = self.__predictionRepository.getRelatedTo(gameId)
+        for prediction in predictions:
+            prediction.updatePoints(
+                self.calculatePoints(prediction, homeSideScore, awaySideScore)
+            )
+        self.__predictionRepository.saveAll(predictions)
+
+    def calculatePoints(
+        self, prediction: Prediction, homeSideScore: int, awaySideScore: int
+    ):
+        return 5
 
 
 class UpdatePredictionPoints:
